@@ -507,4 +507,12 @@ var migrations = []migration{
 			`alter table auth_code add column session_id text not null default '';`,
 		},
 	},
+	// Convert password groups values backfilled from the original default '[]'
+	// from SQLite TEXT storage class to BLOB.
+	{
+		stmts: []string{
+			`update password set groups = CAST(groups as BLOB);`,
+		},
+		flavor: &flavorSQLite3,
+	},
 }
