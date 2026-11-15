@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"slices"
 	"sync/atomic"
 	"time"
 
@@ -326,6 +327,10 @@ func (s *Server) mount(routes router.Mux, c Config, rc resolvedConfig) {
 			Backchannel: s.backchannel,
 		},
 	} {
+		// A disabled grant should not leave its endpoints reachable.
+		if _, isDevice := h.(*device.Handler); isDevice && !slices.Contains(rc.grantTypes, oauth2.GrantTypeDeviceCode) {
+			continue
+		}
 		h.Mount(routes)
 	}
 
