@@ -15,6 +15,9 @@ func (c *conn) migrate() (int, error) {
 	if err != nil {
 		return 0, fmt.Errorf("creating migration table: %v", err)
 	}
+	if err := c.reconcileForkedSchema(); err != nil {
+		return 0, err
+	}
 
 	i := 0
 	done := false
